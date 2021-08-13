@@ -26,18 +26,50 @@ export default class Model {
 	// Добавление задач в массив
 	addTask(text) {
 
+		let id = 1; // свой идентифи-р для каждой задачи
+
+		if (this.tasks.length > 0) { // если массив не пустой, есть задачи
+
+			id = this.tasks[this.tasks.length - 1]['id'] + 1; // добавл. id = индекс последнего + 1
+		}
+
 		//  Новый объект с задачей
 		const newTask = {
+			id: id,
 			status: 'active', // статус задачи
 			text: text, // сама задача
 		};
 
 		this.tasks.push(newTask); // пушим в массив
+		this.saveToLocalStorage(); // сохр. в localeStorage
+
+		// Возвращаем объект(новую задачу) для отрисовки
+		return newTask;
+	}
+
+	// Находим задачу по id
+	findTask(id) {
+
+		const task = this.tasks.find(function(task) { // перебор задач, возвр. нужную задачу
+			if (task.id === parseInt(id)) { // сравнивает число с числом, id
+				return true;
+			}
+		})
+
+		return task; // возвр. задачу, ко-ю нашёл
 	}
 
 	// Смена статуса задачи
-	doneTask(task) {
-		task.status = 'done'; // выполнена
+	changeStatus(task) {
+
+		if (task.status === 'active') {
+			task.status = 'done';
+		} else {
+			task.status = 'active';
+
+		}
+
+		this.saveToLocalStorage();
 	}
 
 	// Удаление задач
@@ -45,6 +77,7 @@ export default class Model {
 
 		const index = this.tasks.indexOf(task); // находим индекс удаляемой задачи
 		this.tasks.splice(index, 1); // удаляем элемент с нужным индексом
+		this.saveToLocalStorage();
 	}
 
 
